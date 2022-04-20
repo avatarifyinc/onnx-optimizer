@@ -19,6 +19,7 @@
 #include "onnxoptimizer/passes/eliminate_nop_cast.h"
 #include "onnxoptimizer/passes/eliminate_nop_dropout.h"
 #include "onnxoptimizer/passes/eliminate_nop_flatten.h"
+#include "onnxoptimizer/passes/eliminate_nop_reshape.h"
 #include "onnxoptimizer/passes/eliminate_nop_monotone_argmax.h"
 #include "onnxoptimizer/passes/eliminate_nop_pad.h"
 #include "onnxoptimizer/passes/eliminate_nop_transpose.h"
@@ -56,6 +57,7 @@ struct GlobalPassRegistry {
     registerPass<EliminateNopCast>();
     registerPass<EliminateNopDropout>();
     registerPass<EliminateNopFlatten>();
+    registerPass<EliminateNopReshape>();
     registerPass<EliminateIdentity>();
     registerPass<EliminateIfWithConstCond>();
     registerPass<EliminateNopMonotoneArgmax>();
