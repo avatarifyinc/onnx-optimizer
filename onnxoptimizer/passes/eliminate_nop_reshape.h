@@ -62,29 +62,27 @@ struct EliminateNopReshape final : public PredicateBasedPass {
     if (input_shape.size() != target_shape.size())
       return false;
 
-    for (int i = 0; i < input_shape.size(); ++i) {
+    size_t unknown_dims = 0;
+    for (size_t i = 0; i < input_shape.size(); ++i) {
       const auto& dim = input_shape[i];
-      if (!dim.is_int)
-        return false;
-      if (target_shape[i] == -1)
+      if (!dim.is_int || dim.is_unknown) {
+        unknown_dims += 1;
         continue;
+      }
+      if (target_shape[i] == -1) {
+        unknown_dims += 1;
+        continue;
+      }
       if (dim.dim != target_shape[i])
         return false;
     }
+    if (unknown_dims > 1)
+      return false;
     
-    auto target_shape_input = node->inputs()[1];
     const bool replacing_success =
         tryReplacingAllUsesWith(node->output(), node->inputs()[0]);
     if (!replacing_success)
       return false;
-
-    if (target_shape_input->uses().size() == 0) {
-        if (target_shape_input->node()->kind() == kConstant) {
-          target_shape_input->node()->destroy();
-        } else {
-          graph.eraseInitializerAndInput(target_shape_input);
-        }
-      }
     
     destroy_current = NodeDestroyType::DestroyOne;
     return true;
